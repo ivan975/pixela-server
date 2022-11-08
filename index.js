@@ -56,7 +56,7 @@ app.post("/service", async (req, res) => {
 // get the data
 app.get('/service', async (req, res) => {
     try {
-        const cursor = await serviceCollection.find({}).toArray();
+        const cursor = await serviceCollection.find({}).limit(3).toArray();
 
         res.send({
             success: true,
