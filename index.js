@@ -25,6 +25,54 @@ async function dbConnection() {
 }
 dbConnection();
 
+const serviceCollection = client.db('pixelas').collection('services');
+
+
+// adding the product
+app.post("/service", async (req, res) => {
+    try {
+        const result = await serviceCollection.insertOne(req.body);
+
+        if (result.insertedId) {
+            res.send({
+                success: true,
+                message: `Successfully created the ${req.body.name} with id ${result.insertedId}`,
+            });
+        } else {
+            res.send({
+                success: false,
+                error: "Couldn't add the product",
+            });
+        }
+    } catch (error) {
+        console.log(error.name.bgRed, error.message.bold);
+        res.send({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
+// get the data
+app.get('/service', async (req, res) => {
+    try {
+        const cursor = await serviceCollection.find({}).toArray();
+
+        res.send({
+            success: true,
+            message: '',
+            data: cursor
+        })
+    }
+    catch (err) {
+        console.log(err.name.bgRed, err.message.bold);
+        res.send({
+            success: false,
+            error: err.message,
+        });
+    }
+})
+
 app.get('/', (req, res) => {
     res.send('preparing for assignment')
 })
