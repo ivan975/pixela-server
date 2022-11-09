@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 require('colors');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
@@ -26,7 +26,7 @@ async function dbConnection() {
 dbConnection();
 
 const serviceCollection = client.db('pixelas').collection('services');
-
+const reviewCollection = client.db('pixelas').collection('reviews');
 
 // adding the product
 app.post("/service", async (req, res) => {
@@ -36,7 +36,7 @@ app.post("/service", async (req, res) => {
         if (result.insertedId) {
             res.send({
                 success: true,
-                message: `Successfully created the ${req.body.name} with id ${result.insertedId}`,
+                message: `Successfully added the service with id ${result.insertedId}`,
             });
         } else {
             res.send({
@@ -57,12 +57,77 @@ app.post("/service", async (req, res) => {
 app.get('/service', async (req, res) => {
     try {
         const cursor = await serviceCollection.find({}).limit(3).toArray();
-
+        res.send(cursor);
+    }
+    catch (err) {
+        console.log(err.name.bgRed, err.message.bold);
         res.send({
-            success: true,
-            message: '',
-            data: cursor
-        })
+            success: false,
+            error: err.message,
+        });
+    }
+})
+
+app.get('/services/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const service = await serviceCollection.findOne(query);
+        res.send(service)
+    }
+    catch (err) {
+        console.log(err.name.bgRed, err.message.bold);
+        res.send({
+            success: false,
+            error: err.message,
+        });
+    }
+})
+// adding the review
+app.post('/review', async (req, res) => {
+    try {
+        const result = await reviewCollection.insertOne(req.body);
+
+        if (result.insertedId) {
+            res.send({
+                success: true,
+                message: `Successfully added the product with id ${result.insertedId}`,
+            });
+        } else {
+            res.send({
+                success: false,
+                error: "Couldn't add the review",
+            });
+        }
+    } catch (error) {
+        console.log(error.name.bgRed, error.message.bold);
+        res.send({
+            success: false,
+            error: error.message,
+        });
+    }
+})
+
+app.get('/review', async (req, res) => {
+    try {
+        const cursor = await reviewCollection.find({}).toArray();
+        res.send(cursor)
+    }
+    catch (err) {
+        console.log(err.name.bgRed, err.message.bold);
+        res.send({
+            success: false,
+            error: err.message,
+        });
+    }
+})
+
+app.get('/review/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const service = await reviewCollection.findOne(query);
+        res.send(service)
     }
     catch (err) {
         console.log(err.name.bgRed, err.message.bold);
