@@ -41,7 +41,7 @@ app.post("/service", async (req, res) => {
         } else {
             res.send({
                 success: false,
-                error: "Couldn't add the product",
+                error: "Couldn't add the review",
             });
         }
     } catch (error) {
@@ -91,7 +91,7 @@ app.post('/review', async (req, res) => {
         if (result.insertedId) {
             res.send({
                 success: true,
-                message: `Successfully added the product with id ${result.insertedId}`,
+                message: `Successfully added the review with id ${result.insertedId}`,
             });
         } else {
             res.send({
@@ -122,6 +122,34 @@ app.get('/review', async (req, res) => {
     }
 })
 
+app.delete("/review/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const review = await reviewCollection.findOne({ _id: ObjectId(id) });
+
+        if (!review?._id) {
+            res.send({
+                success: false,
+                error: "review doesn't exist",
+            });
+        }
+
+        const result = await reviewCollection.deleteOne({ _id: ObjectId(id) });
+        if (result.deletedCount) {
+            res.send({
+                success: true,
+                message: `Successfully deleted the review`,
+            });
+        }
+    }
+    catch (error) {
+        res.send({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
 app.get('/review/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -144,3 +172,7 @@ app.get('/', (req, res) => {
 app.listen(port, (req, res) => {
     console.log(`server running on ${port}`.cyan.bold);
 })
+
+
+
+// https://assignment-11-server-zeta.vercel.app
