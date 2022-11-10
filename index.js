@@ -156,7 +156,7 @@ app.patch("/review/:id", async (req, res) => {
     try {
         const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body });
 
-        if (result.matchedCount) {
+        if (result.matchedCount > 0) {
             res.send({
                 success: true,
                 message: `successfully updated the review`,
