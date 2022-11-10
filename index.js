@@ -166,6 +166,23 @@ app.get('/review/:id', async (req, res) => {
     }
 })
 
+
+// all services show
+app.get('/services', async (req, res) => {
+    try {
+        const cursor = await serviceCollection.find({}).toArray();
+        res.send(cursor);
+    }
+    catch (err) {
+        console.log(err.name.bgRed, err.message.bold);
+        res.send({
+            success: false,
+            error: err.message,
+        });
+    }
+})
+
+
 app.get('/', (req, res) => {
     res.send('preparing for assignment')
 })
