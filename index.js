@@ -150,6 +150,32 @@ app.delete("/review/:id", async (req, res) => {
     }
 });
 
+app.patch("/review/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body });
+
+        if (result.matchedCount) {
+            res.send({
+                success: true,
+                message: `successfully updated the review`,
+            });
+        } else {
+            res.send({
+                success: false,
+                error: "Couldn't update  the review",
+            });
+        }
+    } catch (error) {
+        res.send({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
+
 app.get('/review/:id', async (req, res) => {
     try {
         const id = req.params.id;
